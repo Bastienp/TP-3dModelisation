@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>
+			WebGL/three.js
+		</title>
+		<script src = "three.min.js"></script>
+
+	</head>
+	<body>
+		<h1>
+		Scene 3D
+		</h1>
+		<canvas id ="3d"></canvas>
+		<script>
+		// Modélisation
+		const tailleCube = 20;
+		const tailleCubeFrontiere = 400;
+		const avancement = 20;
+		var vitesse = 100;
+		
+		var scene = new THREE.Scene();
+		var meshLimite = new THREE.Mesh(
+				new THREE.CubeGeometry(tailleCubeFrontiere, tailleCubeFrontiere, tailleCubeFrontiere, 5, 5, 5),
+				new THREE.MeshLambertMaterial(
+						{
+							color		: 0x0000ff, 
+							wireframe	: true
+						}
+						)
+				);
+		var meshTest = new THREE.Mesh(
+				new THREE.CubeGeometry(10, 10, 10, 5, 5, 5),
+				new THREE.MeshLambertMaterial(
+						{
+							color		: 0x0000ff, 
+							wireframe	: false
+						}
+						)
+				);
+		
+		var mesh1 = new THREE.Mesh(
+				new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 10, 10, 10),
+				new THREE.MeshLambertMaterial(
+						{
+							color		: 0x0000ff, 
+							wireframe	: false
+						}
+						)
+				);
+		var mesh2 = new THREE.Mesh(
+				new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 10, 10, 10),
+				new THREE.MeshLambertMaterial(
+						{
+							color		: 0x0001ff, 
+							wireframe	: false
+						}
+						)
+				);
+		
+		var mesh3 = new THREE.Mesh(
+				new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 10, 10, 10),
+				new THREE.MeshLambertMaterial(
+						{
+							color		: 0x0001ff, 
+							wireframe	: false
+						}
+						)
+				);
+		
+		var tableauDeCube = new Array(mesh1, mesh2, mesh3);
+		var directionX = new THREE.Vector3(1, 0, 0);
+		var directionY = new THREE.Vector3(0, 1, 0);
+		var directionZ = new THREE.Vector3(0, 0, 1);
+		var directionSnake = new THREE.Vector3(1, 0, 0);
+		scene.add(meshLimite);
+		scene.add(meshTest);
+		for (i = 0 ; i < tableauDeCube.length ; i++)
+			
+			{
+				scene.add(tableauDeCube[i]);
+			}
+			
+		meshTest.position.set(400, 400, 400);
+		meshLimite.position.set(200, 200, 200)
+		tableauDeCube[0].position.set(0, 360, 360);
+		tableauDeCube[1].position.set(20, 380, 380);
+		tableauDeCube[2].position.set(40, 400, 400);
+		
+		document.onkeydown = keyDown;
+		setInterval(function() {avancer(tableauDeCube, directionSnake)}, vitesse);
+		
+		
+		scene.add(new THREE.AmbientLight(0x222222))
+		var light = new THREE.PointLight(0xffffff);
+		light.position.y = 1000;
+		scene.add(light);
+		//Rendu
+		var renderer = new THREE.WebGLRenderer(
+				{canvas : document.getElementById("3d")}
+					);
+		var camera = new THREE.PerspectiveCamera(
+				75, 4/3, 1, 10000
+				);
+		camera.position.set(450, 450, 600);
+		camera.lookAt(new THREE.Vector3(300, 300, 400));
+		renderer.setSize(1200,675);
+		renderer.render(scene, camera);
+		
+		
+		function avancer(tableauDeCube, directionSnake)
+		{
+			tableauDeCube[0].position.x = tableauDeCube[2].position.x + (avancement * directionSnake.x);
+			tableauDeCube[0].position.y = tableauDeCube[2].position.y + (avancement * directionSnake.y);
+			tableauDeCube[0].position.z = tableauDeCube[2].position.z + (avancement * directionSnake.z);
+			
+			if (tableauDeCube[0].position.x > tailleCubeFrontiere)
+			{
+				tableauDecube[0].position.x = -640;
+			}
+			
+			tableauDeCube.push(tableauDeCube[0]);
+			tableauDeCube.shift();
+			
+
+			renderer.render(scene, camera);		
+		}
+		
+		function keyDown(event)
+		{
+			var keyCode = event.which;
+			//left arrow
+			if (keyCode == 37)
+				{
+					directionSnake.x = -1;
+					directionSnake.y = 0;
+					directionSnake.z = 0;
+				}
+			// right arrow
+			if (keyCode == 39)
+				{
+					directionSnake.x = 1;
+					directionSnake.y = 0;
+					directionSnake.z = 0;
+				}
+			
+			//up arrow
+			if (keyCode == 38)
+				{
+					directionSnake.x = 0;
+					directionSnake.y = 1;
+					directionSnake.z = 0;
+				}
+			
+			//down arrow
+			if (keyCode == 40)
+				{
+					directionSnake.x = 0;
+					directionSnake.y = -1;
+					directionSnake.z = 0;
+				}
+			// Z key, controle le snake dans la profondeur
+			if (keyCode == 90)
+				{
+					directionSnake.x = 0;
+					directionSnake.y = 0;
+					directionSnake.z = -1;
+				}
+			// S key, controle le snake dans la profondeur
+			if (keyCode == 83)
+				{
+					directionSnake.x = 0;
+					directionSnake.y = 0;
+					directionSnake.z = 1;
+				}
+				
+		}
+// 		animate();
+		
+// 		function animate()
+// 		{
+// 			requestAnimationFrame(animate);
+// 			mesh.rotation.x += 0.03;
+// 			mesh.rotation.x += 0.03;
+// 			renderer.render(scene, camera);
+// 		}
+					
+				
+		</script>
+		
+
+</body>
+</html>
