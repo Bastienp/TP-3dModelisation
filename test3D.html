@@ -18,7 +18,7 @@
 		const tailleCube = 20;
 		const tailleCubeFrontiere = 400;
 		const avancement = 20;
-		var vitesse = 100;
+		var vitesse = 200;
 		
 		var scene = new THREE.Scene();
 		var meshLimite = new THREE.Mesh(
@@ -73,7 +73,7 @@
 		var directionX = new THREE.Vector3(1, 0, 0);
 		var directionY = new THREE.Vector3(0, 1, 0);
 		var directionZ = new THREE.Vector3(0, 0, 1);
-		var directionSnake = new THREE.Vector3(1, 0, 0);
+		var directionSnake = new THREE.Vector3(0, 0, 0);
 		scene.add(meshLimite);
 		scene.add(meshTest);
 		for (i = 0 ; i < tableauDeCube.length ; i++)
@@ -115,10 +115,10 @@
 			tableauDeCube[0].position.y = tableauDeCube[2].position.y + (avancement * directionSnake.y);
 			tableauDeCube[0].position.z = tableauDeCube[2].position.z + (avancement * directionSnake.z);
 			
-			if (tableauDeCube[0].position.x > tailleCubeFrontiere)
-			{
-				tableauDecube[0].position.x = -640;
-			}
+// 			if (tableauDeCube[0].position.x > tailleCubeFrontiere)
+// 			{
+// 				tableauDecube[0].position.x = 0;
+// 			}
 			
 			tableauDeCube.push(tableauDeCube[0]);
 			tableauDeCube.shift();
