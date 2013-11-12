@@ -18,7 +18,7 @@
 		const tailleCube = 20;
 		const tailleCubeFrontiere = 400;
 		const avancement = 20;
-		var vitesse = 200;
+		var vitesse = 100;
 		
 		var scene = new THREE.Scene();
 		var meshLimite = new THREE.Mesh(
@@ -31,7 +31,7 @@
 						)
 				);
 		var meshTest = new THREE.Mesh(
-				new THREE.CubeGeometry(10, 10, 10, 5, 5, 5),
+				new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 5, 5, 5),
 				new THREE.MeshLambertMaterial(
 						{
 							color		: 0x0000ff, 
@@ -73,9 +73,10 @@
 		var directionX = new THREE.Vector3(1, 0, 0);
 		var directionY = new THREE.Vector3(0, 1, 0);
 		var directionZ = new THREE.Vector3(0, 0, 1);
-		var directionSnake = new THREE.Vector3(0, 0, 0);
+		var directionSnake = new THREE.Vector3(1, 0, 0);
 		scene.add(meshLimite);
 		scene.add(meshTest);
+		var dernierElementTableau = tableauDeCube.length - 1;
 		for (i = 0 ; i < tableauDeCube.length ; i++)
 			
 			{
@@ -84,10 +85,10 @@
 			
 		meshTest.position.set(400, 400, 400);
 		meshLimite.position.set(200, 200, 200)
-		tableauDeCube[0].position.set(0, 360, 360);
-		tableauDeCube[1].position.set(20, 380, 380);
-		tableauDeCube[2].position.set(40, 400, 400);
-		
+		tableauDeCube[0].position.set(0, 340, 340);
+		tableauDeCube[1].position.set(20, 360, 360);
+		tableauDeCube[2].position.set(40, 380, 380);
+// 		popPommes();
 		document.onkeydown = keyDown;
 		setInterval(function() {avancer(tableauDeCube, directionSnake)}, vitesse);
 		
@@ -108,21 +109,68 @@
 		renderer.setSize(1200,675);
 		renderer.render(scene, camera);
 		
+		function popPommes()
+		{
+			var pommeX = Math.floor(Math.random() * 20) * 20;
+			var pommeY = Math.floor(Math.random() * 20) * 20;
+			var pommeZ = Math.floor(Math.random() * 20) * 20;
+			var meshPomme = new THREE.Mesh(
+					new THREE.CubeGeometry(10, 10, 10, 5, 5, 5),
+					new THREE.MeshLambertMaterial(
+							{
+								color		: 0x0000ff, 
+								wireframe	: false
+							}
+							)
+					);
+			
+			meshPomme.position.set(pommeX, pommeY, pommeZ);
+			renderer.render(scene, camera);
+		}
 		
 		function avancer(tableauDeCube, directionSnake)
-		{
-			tableauDeCube[0].position.x = tableauDeCube[2].position.x + (avancement * directionSnake.x);
-			tableauDeCube[0].position.y = tableauDeCube[2].position.y + (avancement * directionSnake.y);
-			tableauDeCube[0].position.z = tableauDeCube[2].position.z + (avancement * directionSnake.z);
+		{			
+			tableauDeCube[0].position.x = tableauDeCube[dernierElementTableau].position.x + (avancement * directionSnake.x);
+			tableauDeCube[0].position.y = tableauDeCube[dernierElementTableau].position.y + (avancement * directionSnake.y);
+			tableauDeCube[0].position.z = tableauDeCube[dernierElementTableau].position.z + (avancement * directionSnake.z);
 			
-// 			if (tableauDeCube[0].position.x > tailleCubeFrontiere)
-// 			{
-// 				tableauDecube[0].position.x = 0;
-// 			}
+			if (tableauDeCube[dernierElementTableau].position.x > tailleCubeFrontiere)
+			{
+				tableauDeCube[0].position.x = 0;
+			}
 			
+			if (tableauDeCube[dernierElementTableau].position.x < 0)
+			{
+				tableauDeCube[0].position.x = tailleCubeFrontiere;
+			}
+			
+			if (tableauDeCube[dernierElementTableau].position.y > tailleCubeFrontiere)
+			{
+				tableauDeCube[0].position.y = 0;
+			}
+			
+			if (tableauDeCube[dernierElementTableau].position.y < 0)
+			{
+				tableauDeCube[0].position.y = tailleCubeFrontiere;
+			}
+			
+			
+			if (tableauDeCube[dernierElementTableau].position.z > tailleCubeFrontiere)
+			{
+				tableauDeCube[0].position.z = 0;
+			}
+			
+			if (tableauDeCube[dernierElementTableau].position.z < 0)
+			{
+				tableauDeCube[0].position.z = tailleCubeFrontiere;
+			}
+			
+						
 			tableauDeCube.push(tableauDeCube[0]);
 			tableauDeCube.shift();
 			
+			
+
 
 			renderer.render(scene, camera);		
 		}
