@@ -10,20 +10,60 @@
 	</head>
 	<body>
 		<h1>
-		Scene 3D
+		Snake 3D
 		</h1>
+		<h1>Score : </h1>
+		<p id="score"></p>
 		<canvas id ="3d"></canvas>
 		<script>
+		 
 		// Modélisation
+		
+		
+		// 		var mesh1 = new THREE.Mesh(
+// 				new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 10, 10, 10),
+// 				new THREE.MeshLambertMaterial(
+// 						{
+// 							color		: 0x0000ff, 
+// 							wireframe	: false
+// 						}
+// 						)
+// 				);
+// 		var mesh2 = new THREE.Mesh(
+// 				new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 10, 10, 10),
+// 				new THREE.MeshLambertMaterial(
+// 						{
+// 							color		: 0x0001ff, 
+// 							wireframe	: false
+// 						}
+// 						)
+// 				);
+		
+// 		var mesh3 = new THREE.Mesh(
+// 				new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 10, 10, 10),
+// 				new THREE.MeshLambertMaterial(
+// 						{
+// 							color		: 0x0001ff, 
+// 							wireframe	: false
+// 						}
+// 						)
+// 				);
+
+// 		var tableauDeCube = new Array(mesh1, mesh2, mesh3);
+		
+		
+		
+		
+		const tailleSnakeDepart = 3;
 		const tailleCube = 20;
 		const tailleCubeFrontiere = 400;
 		const avancement = 20;
 		var vitesse = 100;
-		
+		var tableauDeCube = new Array;
 		var positionPomme = new THREE.Vector3(0, 0, 0);
-		
-
+		var directionSnake = new THREE.Vector3(1, 0, 0);
 		var scene = new THREE.Scene();
+		
 		var meshLimite = new THREE.Mesh(
 				new THREE.CubeGeometry(tailleCubeFrontiere, tailleCubeFrontiere, tailleCubeFrontiere, 5, 5, 5),
 				new THREE.MeshLambertMaterial(
@@ -54,34 +94,7 @@
 						)
 				);
 		
-		var mesh1 = new THREE.Mesh(
-				new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 10, 10, 10),
-				new THREE.MeshLambertMaterial(
-						{
-							color		: 0x0000ff, 
-							wireframe	: false
-						}
-						)
-				);
-		var mesh2 = new THREE.Mesh(
-				new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 10, 10, 10),
-				new THREE.MeshLambertMaterial(
-						{
-							color		: 0x0001ff, 
-							wireframe	: false
-						}
-						)
-				);
-		
-		var mesh3 = new THREE.Mesh(
-				new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 10, 10, 10),
-				new THREE.MeshLambertMaterial(
-						{
-							color		: 0x0001ff, 
-							wireframe	: false
-						}
-						)
-				);
+
 		var meshPomme = new THREE.Mesh(
 				new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 5, 5, 5),
 				new THREE.MeshLambertMaterial(
@@ -92,21 +105,20 @@
 						)
 				);
 		
-		var tableauDeCube = new Array(mesh1, mesh2, mesh3);
+		
 
-		var directionSnake = new THREE.Vector3(1, 0, 0);
+		createSnake();
 		scene.add(meshLimite);
 		scene.add(meshCubeDePerspective1);
 		scene.add(meshCubeDePerspective2);
 		scene.add(meshPomme);
-		
-
 		for (i = 0 ; i < tableauDeCube.length ; i++)
 			
 			{
 				scene.add(tableauDeCube[i]);
 			}
 			
+		
 		meshCubeDePerspective1.position.set(400, 400, 400);
 		meshCubeDePerspective2.position.set(0, 0, 0);
 		meshLimite.position.set(200, 200, 200)
@@ -136,42 +148,111 @@
 		renderer.render(scene, camera);
 		
 		
-		function dernierElementTableau()
+		
+		/*************************************************************************************************	
+		*************************************************************************************************/
+		function createSnake()
 		{
-			return tableauDeCube.length - 1;
+			for(i = 0 ; i <= tailleSnakeDepart ; i++)
+				{
+					tableauDeCube.push(new THREE.Mesh(
+							new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 5, 5, 5),
+							new THREE.MeshLambertMaterial(
+									{
+										color		: 0x0000ff, 
+										wireframe	: false
+									}
+									)
+							));			
+				}
 		}
+		
+		/*************************************************************************************************	
+		*************************************************************************************************/
+		function perdu()
+		{
+			alert("Dommage");
+		}
+		
+		/*************************************************************************************************	
+		*************************************************************************************************/
 		function popPommes()
 		{
 			positionPomme.x = Math.floor(Math.random() * 20) * 20;
 			positionPomme.y = Math.floor(Math.random() * 20) * 20;
 			positionPomme.z = Math.floor(Math.random() * 20) * 20;
-			meshPomme.position.set(positionPomme.x, positionPomme.y, positionPomme.z);
+			meshPomme.position.set(positionPomme.x, positionPomme.y, positionPomme.z);	
 		}
 		
-		function avancer(tableauDeCube, directionSnake)
-		{			
+		/*************************************************************************************************	
+		*************************************************************************************************/
+		function score()
+		{
+			return tableauDeCube.length - 3;
+		}
+		
+		/*************************************************************************************************	
+		*************************************************************************************************/
+				function dernierElementTableau()
+		{
+			return tableauDeCube.length - 1;
+		}
 
-			if (tableauDeCube[2].position.x == positionPomme.x && tableauDeCube[2].position.y == positionPomme.y && tableauDeCube[2].position.z == positionPomme.z)
-			{
+		
+		/*************************************************************************************************
+		*************************************************************************************************/
+		function isInColision()
+		{
+			
+			for (i = 0 ; i < tableauDeCube.length -1 ; i++)
+				{
 				
+					if (
+							tableauDeCube[dernierElementTableau()].position.x == tableauDeCube[i].position.x &&
+							tableauDeCube[dernierElementTableau()].position.y == tableauDeCube[i].position.y &&
+							tableauDeCube[dernierElementTableau()].position.z == tableauDeCube[i].position.z)
+						
+						{
+							return true;
+						}
+					else
+						{
+							return false;
+						}				
+				}
+		}
+		
+		/*************************************************************************************************	
+		*************************************************************************************************/
+		
+		function avancer(tableauDeCube, directionSnake)
+		{
+			if (isInColision() == true)
+				{
+					perdu();
+				}
+
+			if (
+					tableauDeCube[2].position.x == positionPomme.x && 
+					tableauDeCube[2].position.y == positionPomme.y && 
+					tableauDeCube[2].position.z == positionPomme.z)
+				{
+
+					var meshAjout = new THREE.Mesh(
+							new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 10, 10, 10),
+							new THREE.MeshLambertMaterial(
+									{
+										color		: 0x0000ff, 
+										wireframe	: false
+									}
+									)
+							);
 				
-				
-				
-				var meshAjout = new THREE.Mesh(
-						new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 10, 10, 10),
-						new THREE.MeshLambertMaterial(
-								{
-									color		: 0x0000ff, 
-									wireframe	: false
-								}
-								)
-						);
-				
-				meshAjout.position.set(
-						tableauDeCube[dernierElementTableau()].position.x + (avancement * directionSnake.x), 
-						tableauDeCube[dernierElementTableau()].position.y + (avancement * directionSnake.y), 
-						tableauDeCube[dernierElementTableau()].position.z + (avancement * directionSnake.z)
-				);
+					meshAjout.position.set(
+							tableauDeCube[dernierElementTableau()].position.x + (avancement * directionSnake.x), 
+							tableauDeCube[dernierElementTableau()].position.y + (avancement * directionSnake.y), 
+							tableauDeCube[dernierElementTableau()].position.z + (avancement * directionSnake.z)
+					);
 				
 
 				tableauDeCube.push(meshAjout);
@@ -180,7 +261,7 @@
 				
 				popPommes();
 
-			}
+				}
 			
 			else
 				{
@@ -224,17 +305,13 @@
 							
 				tableauDeCube.push(tableauDeCube[0]);
 				tableauDeCube.shift();
-				
-//	 			if (tableauDeCube[2].position.x != positionPomme.x || tableauDeCube[2].position.y != positionPomme.y || tableauDeCube[2].position.z != positionPomme.z)
-//					{
-//						tableauDeCube.shift();
-//					}
-			
 				renderer.render(scene, camera);		
 				}
-			
 		}
 		
+		/*************************************************************************************************
+			Gestion des touches
+		*************************************************************************************************/
 		function keyDown(event)
 		{
 			var keyCode = event.which;
@@ -281,19 +358,8 @@
 					directionSnake.x = 0;
 					directionSnake.y = 0;
 					directionSnake.z = 1;
-				}
-				
+				}		
 		}
-// 		animate();
-		
-// 		function animate()
-// 		{
-// 			requestAnimationFrame(animate);
-// 			mesh.rotation.x += 0.03;
-// 			mesh.rotation.x += 0.03;
-// 			renderer.render(scene, camera);
-// 		}
-					
 				
 		</script>
 		
