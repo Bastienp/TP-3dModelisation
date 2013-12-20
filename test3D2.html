@@ -1,0 +1,367 @@
+ <!DOCTYPE html>
+<html>
+        <head>
+                <title>
+                        WebGL/three.js
+                </title>
+                <script src = "three.min.js"></script>
+
+        </head>
+        <body>
+                <h1>
+                Snake 3D
+                </h1>
+                <h1>Score : </h1>
+                <p id="score"></p>
+                <canvas id ="3d"></canvas>
+                <script>
+                 
+                // Modélisation
+                
+                
+                //                 var mesh1 = new THREE.Mesh(
+//                                 new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 10, 10, 10),
+//                                 new THREE.MeshLambertMaterial(
+//                                                 {
+//                                                         color                : 0x0000ff, 
+//                                                         wireframe        : false
+//                                                 }
+//                                                 )
+//                                 );
+//                 var mesh2 = new THREE.Mesh(
+//                                 new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 10, 10, 10),
+//                                 new THREE.MeshLambertMaterial(
+//                                                 {
+//                                                         color                : 0x0001ff, 
+//                                                         wireframe        : false
+//                                                 }
+//                                                 )
+//                                 );
+                
+//                 var mesh3 = new THREE.Mesh(
+//                                 new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 10, 10, 10),
+//                                 new THREE.MeshLambertMaterial(
+//                                                 {
+//                                                         color                : 0x0001ff, 
+//                                                         wireframe        : false
+//                                                 }
+//                                                 )
+//                                 );
+
+//                 var tableauDeCube = new Array(mesh1, mesh2, mesh3);
+                
+                
+                
+                
+                const tailleSnakeDepart = 22;
+                const tailleCube = 20;
+                const tailleCubeFrontiere = 400;
+                const avancement = 20;
+                var vitesse = 100;
+                var tableauDeCube = new Array;
+                var positionPomme = new THREE.Vector3(0, 0, 0);
+                var directionSnake = new THREE.Vector3(1, 0, 0);
+                var scene = new THREE.Scene();
+                
+                var meshLimite = new THREE.Mesh(
+                                new THREE.CubeGeometry(tailleCubeFrontiere, tailleCubeFrontiere, tailleCubeFrontiere, 5, 5, 5),
+                                new THREE.MeshLambertMaterial(
+                                                {
+                                                        color                : 0x0000ff, 
+                                                        wireframe        : true
+                                                }
+                                                )
+                                );
+                
+                // Faire les cubes de perspectives pour les 8 coins ?
+                var meshCubeDePerspective1 = new THREE.Mesh(
+                                new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 3, 3, 3),
+                                new THREE.MeshLambertMaterial(
+                                                {
+                                                        color                : 0xff00ff, 
+                                                        wireframe        : true
+                                                }
+                                                )
+                                );
+                var meshCubeDePerspective2 = new THREE.Mesh(
+                                new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 3, 3, 3),
+                                new THREE.MeshLambertMaterial(
+                                                {
+                                                        color                : 0xff00ff, 
+                                                        wireframe        : true
+                                                }
+                                                )
+                                );
+                
+
+                var meshPomme = new THREE.Mesh(
+                                new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 5, 5, 5),
+                                new THREE.MeshLambertMaterial(
+                                                {
+                                                        color                : 0x0000ff, 
+                                                        wireframe        : false
+                                                }
+                                                )
+                                );
+                
+                
+
+                createSnake();
+                scene.add(meshLimite);
+                scene.add(meshCubeDePerspective1);
+                scene.add(meshCubeDePerspective2);
+                scene.add(meshPomme);
+                for (i = 0 ; i < tableauDeCube.length ; i++)
+                        
+                        {
+                                scene.add(tableauDeCube[i]);
+                        }
+                        
+                
+                meshCubeDePerspective1.position.set(400, 400, 400);
+                meshCubeDePerspective2.position.set(0, 0, 0);
+                meshLimite.position.set(200, 200, 200)
+                tableauDeCube[0].position.set(0, 360, 360);
+                tableauDeCube[1].position.set(0, 380, 380);
+                tableauDeCube[2].position.set(0, 400, 400);
+
+                popPommes();
+                document.onkeydown = keyDown;
+                setInterval(function() {avancer(tableauDeCube, directionSnake)}, vitesse);
+                
+                
+                scene.add(new THREE.AmbientLight(0x222222))
+                var light = new THREE.PointLight(0xffffff);
+                light.position.y = 1000;
+                scene.add(light);
+                //Rendu
+                var renderer = new THREE.WebGLRenderer(
+                                {canvas : document.getElementById("3d")}
+                                        );
+                var camera = new THREE.PerspectiveCamera(
+                                75, 4/3, 1, 10000
+                                );
+                camera.position.set(450, 450, 600);
+                camera.lookAt(new THREE.Vector3(300, 300, 400));
+                renderer.setSize(1200,675);
+                renderer.render(scene, camera);
+                
+                
+                
+                /*************************************************************************************************        
+                *************************************************************************************************/
+                function createSnake()
+                {
+                        for(i = 0 ; i <= tailleSnakeDepart ; i++)
+                                {
+                                        tableauDeCube.push(new THREE.Mesh(
+                                                        new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 5, 5, 5),
+                                                        new THREE.MeshLambertMaterial(
+                                                                        {
+                                                                                color                : 0x0000ff, 
+                                                                                wireframe        : false
+                                                                        }
+                                                                        )
+                                                        ));                        
+                                }
+                }
+                
+                /*************************************************************************************************        
+                *************************************************************************************************/
+                function perdu()
+                {
+                        alert("Dommage");
+                }
+                
+                /*************************************************************************************************        
+                *************************************************************************************************/
+                function popPommes()
+                {
+                        positionPomme.x = Math.floor(Math.random() * 20) * 20;
+                        positionPomme.y = Math.floor(Math.random() * 20) * 20;
+                        positionPomme.z = Math.floor(Math.random() * 20) * 20;
+                        meshPomme.position.set(positionPomme.x, positionPomme.y, positionPomme.z);        
+                }
+                
+                /*************************************************************************************************        
+                *************************************************************************************************/
+                function score()
+                {
+                        return tableauDeCube.length - 3;
+                }
+                
+                /*************************************************************************************************        
+                *************************************************************************************************/
+                                function dernierElementTableau()
+                {
+                        return tableauDeCube.length - 1;
+                }
+
+                
+                /*************************************************************************************************
+                *************************************************************************************************/
+                function isInColision()
+                {
+                        
+                        for (i = 0 ; i < tableauDeCube.length -1 ; i++)
+                                {
+                                
+                                        if (
+                                                        tableauDeCube[dernierElementTableau()].position.x == tableauDeCube[i].position.x &&
+                                                        tableauDeCube[dernierElementTableau()].position.y == tableauDeCube[i].position.y &&
+                                                        tableauDeCube[dernierElementTableau()].position.z == tableauDeCube[i].position.z)
+                                                
+                                                {
+                                                        return true;
+                                                }
+                                        else
+                                                {
+                                                        return false;
+                                                }                                
+                                }
+                }
+                
+                /*************************************************************************************************        
+                *************************************************************************************************/
+                
+                function avancer(tableauDeCube, directionSnake)
+                {
+                        if (isInColision() == true)
+                                {
+                                        perdu();
+                                }
+
+                        if (
+                                        tableauDeCube[2].position.x == positionPomme.x && 
+                                        tableauDeCube[2].position.y == positionPomme.y && 
+                                        tableauDeCube[2].position.z == positionPomme.z)
+                                {
+
+                                        var meshAjout = new THREE.Mesh(
+                                                        new THREE.CubeGeometry(tailleCube, tailleCube, tailleCube, 10, 10, 10),
+                                                        new THREE.MeshLambertMaterial(
+                                                                        {
+                                                                                color                : 0x0000ff, 
+                                                                                wireframe        : false
+                                                                        }
+                                                                        )
+                                                        );
+                                
+                                        meshAjout.position.set(
+                                                        tableauDeCube[dernierElementTableau()].position.x + (avancement * directionSnake.x), 
+                                                        tableauDeCube[dernierElementTableau()].position.y + (avancement * directionSnake.y), 
+                                                        tableauDeCube[dernierElementTableau()].position.z + (avancement * directionSnake.z)
+                                        );
+                                
+
+                                tableauDeCube.push(meshAjout);
+
+                                scene.add(tableauDeCube[dernierElementTableau()]);
+                                
+                                popPommes();
+
+                                }
+                        
+                        else
+                                {
+                                tableauDeCube[0].position.x = tableauDeCube[dernierElementTableau()].position.x + (avancement * directionSnake.x);
+                                tableauDeCube[0].position.y = tableauDeCube[dernierElementTableau()].position.y + (avancement * directionSnake.y);
+                                tableauDeCube[0].position.z = tableauDeCube[dernierElementTableau()].position.z + (avancement * directionSnake.z);
+                                
+                                
+                                
+                                if (tableauDeCube[dernierElementTableau()].position.x > tailleCubeFrontiere)
+                                {
+                                        tableauDeCube[0].position.x = 0;
+                                }
+                                
+                                if (tableauDeCube[dernierElementTableau()].position.x < 0)
+                                {
+                                        tableauDeCube[0].position.x = tailleCubeFrontiere;
+                                }
+                                
+                                if (tableauDeCube[dernierElementTableau()].position.y > tailleCubeFrontiere)
+                                {
+                                        tableauDeCube[0].position.y = 0;
+                                }
+                                
+                                if (tableauDeCube[dernierElementTableau()].position.y < 0)
+                                {
+                                        tableauDeCube[0].position.y = tailleCubeFrontiere;
+                                }
+                                
+                                
+                                if (tableauDeCube[dernierElementTableau()].position.z > tailleCubeFrontiere)
+                                {
+                                        tableauDeCube[0].position.z = 0;
+                                }
+                                
+                                if (tableauDeCube[dernierElementTableau()].position.z < 0)
+                                {
+                                        tableauDeCube[0].position.z = tailleCubeFrontiere;
+                                }
+                                
+                                                        
+                                tableauDeCube.push(tableauDeCube[0]);
+                                tableauDeCube.shift();
+                                renderer.render(scene, camera);                
+                                }
+                }
+                
+                /*************************************************************************************************
+                        Gestion des touches
+                *************************************************************************************************/
+                function keyDown(event)
+                {
+                        var keyCode = event.which;
+                        //left arrow
+                        if (keyCode == 37 && directionSnake.x == 0)
+                                {
+                                        directionSnake.x = -1;
+                                        directionSnake.y = 0;
+                                        directionSnake.z = 0;
+                                }
+                        // right arrow
+                        if (keyCode == 39 && directionSnake.x == 0)
+                                {
+                                        directionSnake.x = 1;
+                                        directionSnake.y = 0;
+                                        directionSnake.z = 0;
+                                }
+                        
+                        //up arrow
+                        if (keyCode == 38 && directionSnake.y == 0)
+                                {
+                                        directionSnake.x = 0;
+                                        directionSnake.y = 1;
+                                        directionSnake.z = 0;
+                                }
+                        
+                        //down arrow
+                        if (keyCode == 40 && directionSnake.y == 0)
+                                {
+                                        directionSnake.x = 0;
+                                        directionSnake.y = -1;
+                                        directionSnake.z = 0;
+                                }
+                        // Z key, controle le snake dans la profondeur
+                        if (keyCode == 90 && directionSnake.z == 0)
+                                {
+                                        directionSnake.x = 0;
+                                        directionSnake.y = 0;
+                                        directionSnake.z = -1;
+                                }
+                        // S key, controle le snake dans la profondeur
+                        if (keyCode == 83 && directionSnake.z == 0)
+                                {
+                                        directionSnake.x = 0;
+                                        directionSnake.y = 0;
+                                        directionSnake.z = 1;
+                                }                
+                }
+                                
+                </script>
+                
+
+</body>
+</html>
